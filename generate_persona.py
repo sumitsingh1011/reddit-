@@ -56,24 +56,23 @@ def generate_persona_from_text(text):
     model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
     prompt = f"""
-            You are an expert in behavior analysis.
+        You're an expert analyst. Based on the Reddit posts and comments provided below, generate a detailed User Persona with the following structure:
 
-            Based on the following Reddit user's posts and comments, create a detailed USER PERSONA. Include:
+        - **Name**: (make a creative nickname based on their username)
+        - **Age Group**: (infer from writing style or slang)
+        - **Occupation / Background**: (guess if possible from interests or topics)
+        - **Personality Traits**: (e.g. introverted, curious, humorous)
+        - **Goals**: (What does this person seem to care about?)
+        - **Pain Points / Frustrations**: (Any complaints or negative patterns?)
+        - **Interests**: (topics they post/comment on frequently)
+        - **Top Subreddits**: (List active subreddits)
+        - **Sample Quotes**: (Include 1-2 comments/posts as-is)
+        - **Citations**: For each trait, mention the comment/post that supports it.
 
-            - Age group (if inferable)
-            - Interests
-            - Writing style
-            - Personality traits
-            - Beliefs or opinions
-            - Most active subreddits
-            - Anything else noticeable
-
-            Also, for each insight or trait, include a reference to the post/comment content that helped you derive it.
-
-            Here is the user's data:
-            {text}
-            """
-
+        Here is the user's data:
+        {text}
+    """
+    
     response = model.generate_content(prompt)
     return response.text
 
