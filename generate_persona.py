@@ -1,8 +1,12 @@
 import os
 import praw
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 reddit = praw.Reddit(
     client_id=os.getenv("REDDIT_CLIENT_ID"),
@@ -47,3 +51,48 @@ if __name__ == "__main__":
         save_to_file(username, posts, comments)
     else:
         print("Invalid Reddit profile URL.")
+
+def generate_persona_from_text(text):
+    model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+
+    prompt = f"""
+            You are an expert in behavior analysis.
+
+            Based on the following Reddit user's posts and comments, create a detailed USER PERSONA. Include:
+
+            - Age group (if inferable)
+            - Interests
+            - Writing style
+            - Personality traits
+            - Beliefs or opinions
+            - Most active subreddits
+            - Anything else noticeable
+
+            Also, for each insight or trait, include a reference to the post/comment content that helped you derive it.
+
+            Here is the user's data:
+            {text}
+            """
+
+    response = model.generate_content(prompt)
+    return response.text
+
+def generate_and_save_persona(username):
+    raw_file = f"outputs/{username}_raw.txt"
+    output_file = f"outputs/{username}_persona.txt"
+
+    if not os.path.exists(raw_file):
+        print("Raw data not found. Run the fetch first.")
+        return
+
+    with open(raw_file, "r", encoding="utf-8") as f:
+        user_text = f.read()
+
+    persona = generate_persona_from_text(user_text)
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(persona)
+
+    print(f"User persona saved to {output_file}")
+
+generate_and_save_persona(username)
