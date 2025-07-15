@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reddit Persona Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 40px;
+            text-align: center;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .profile-card img {
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section h3 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .section p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        {% if profile_img %}
+            <img src="{{ profile_img }}" alt="Profile Picture">
+        {% else %}
+            <img src="https://www.redditstatic.com/avatars/avatar_default_02_24A0ED.png" alt="Default Reddit Avatar">
+        {% endif %}
+
+        <div class="section">
+            <h3>Username:</h3>
+            <p>{{ username }}</p>
+        </div>
+
+        {% for line in persona.splitlines() %}
+            {% if line.strip() %}
+                <div class="section">
+                    <h3>{{ line.split(':')[0].strip() }}</h3>
+                    <p>{{ line.split(':', 1)[1].strip() if ':' in line else '' }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>
